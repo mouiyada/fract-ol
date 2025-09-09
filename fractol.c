@@ -1,59 +1,69 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fractol.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kyamada <kyamada@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/09 09:55:43 by kyamada           #+#    #+#             */
+/*   Updated: 2025/09/09 13:24:23 by kyamada          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractol.h"
 
-int key_hook(int keycode, void *param)
+void	print_usage(void)
 {
-	t_fractol *f = (t_fractol *)param;
-
-	if (keycode == 65307)
-		exit(0);
-	else if (keycode == 65362)
-		f->offset_y -= 1 / f->zoom;
-	else if (keycode == 65364)
-		f->offset_y += 1 / f->zoom;
-	else if (keycode == 65361)
-		f->offset_x -= 1 / f->zoom;
-	else if (keycode == 65363)
-		f->offset_x += 1 / f->zoom;
-	draw_mandelbrot(f);
-	return 0;
+	write(1, "Please write as follows:\n", 26);
+	write(1, "./fractol mandelbrot\n", 22);
+	write(1, "./fractol julia <re> <im>\n", 27);
 }
 
-int mouse_hook(int button, int x, int y, void *param)
+static void	set_mode(t_fractol *f, int argc, char **argv)
 {
-    t_fractol *f = (t_fractol *)param;
-	(void)x;
-	(void)y;
-
-	if(button == 4)
-		f->zoom *= 1.1;
-	else if(button ==5)
-		f->zoom /= 1.1;
-    draw_mandelbrot(f);
-    return 0;
+	if (argc == 2 && ft_strncmp(argv[1], "mandelbrot", 11) == 0)
+		f->mode = 0;
+	else if (argc == 4 && ft_strncmp(argv[1], "julia", 6) == 0)
+	{
+		f->mode = 1;
+		f->julia_c.re = ft_atof(argv[2]);
+		f->julia_c.im = ft_atof(argv[3]);
+	}
+	else
+	{
+		print_usage();
+		exit(1);
+	}
 }
 
-
-int close_window(t_fractol*f)
+void	init_fractol(t_fractol *f, int argc, char **argv)
 {
-	(void) f;
-
-	exit(0);
-	return 0;
+	f->zoom = 1.0;
+	f->offset_x = 0.0;
+	f->offset_y = 0.0;
+	f->mlx = mlx_init();
+	if (!f->mlx)
+		exit(1);
+	f->win = mlx_new_window(f->mlx, WIDTH, HEIGHT, "fractol");
+	if (!f->win)
+		exit(1);
+	set_mode(f, argc, argv);
 }
 
-int main(void)
+int	main(int argc, char **argv)
 {
-	t_fractol f;
-	f.zoom = 1.0;
-	f.offset_x = 0.0;
-	f.offset_y =0.0;
-	f.mlx = mlx_init();
-	f.win = mlx_new_window(f.mlx, WIDTH, HEIGHT, "Mandelbrot");
+	t_fractol	f;
 
-	draw_mandelbrot(&f);
+	if (argc != 2 && argc != 4)
+	{
+		print_usage();
+		return (1);
+	}
+	init_fractol(&f, argc, argv);
+	draw_fractal(&f);
 	mlx_key_hook(f.win, key_hook, &f);
-	mlx_hook(f.win, 4, ButtonPressMask, mouse_hook, &f);
+	mlx_hook(f.win, 4, (1L << 2), mouse_hook, &f);
 	mlx_hook(f.win, 17, 0, close_window, &f);
 	mlx_loop(f.mlx);
-	return 0;
+	return (0);
 }
