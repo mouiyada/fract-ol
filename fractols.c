@@ -6,7 +6,7 @@
 /*   By: kyamada <kyamada@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 10:49:04 by kyamada           #+#    #+#             */
-/*   Updated: 2025/09/09 13:24:41 by kyamada          ###   ########.fr       */
+/*   Updated: 2025/09/12 17:58:52 by kyamada          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	mandelbrot(t_complex c)
 static void	set_complex(t_fractol *f, t_complex *c, int x, int y)
 {
 	c->re = (x - WIDTH / 2.0) * 4.0 / (WIDTH * f->zoom) + f->offset_x;
-	c->im = (y - HEIGHT / 2.0) * 4.0 / (HEIGHT * f->zoom) + f->offset_y;
+	c->im = -(y - HEIGHT / 2.0) * 4.0 / (HEIGHT * f->zoom) - f->offset_y;
 }
 
 static void	draw_pixel(t_fractol *f, int x, int y)

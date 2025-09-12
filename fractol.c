@@ -6,7 +6,7 @@
 /*   By: kyamada <kyamada@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 09:55:43 by kyamada           #+#    #+#             */
-/*   Updated: 2025/09/09 13:24:23 by kyamada          ###   ########.fr       */
+/*   Updated: 2025/09/12 20:10:11 by kyamada          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,18 @@ void	init_fractol(t_fractol *f, int argc, char **argv)
 	set_mode(f, argc, argv);
 }
 
+int	main_loop_hook(t_fractol *f)
+{
+	if (f->redraw_countdown > 0)
+		f->redraw_countdown--;
+	if (f->redraw_countdown == 0)
+	{
+		draw_fractal(f);
+		f->redraw_countdown = -1;
+	}
+	return (0);
+}
+
 int	main(int argc, char **argv)
 {
 	t_fractol	f;
@@ -60,10 +72,11 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	init_fractol(&f, argc, argv);
-	draw_fractal(&f);
+	f.redraw_countdown = 0;
 	mlx_key_hook(f.win, key_hook, &f);
 	mlx_hook(f.win, 4, (1L << 2), mouse_hook, &f);
 	mlx_hook(f.win, 17, 0, close_window, &f);
+	mlx_loop_hook(f.mlx, main_loop_hook, &f);
 	mlx_loop(f.mlx);
 	return (0);
 }
