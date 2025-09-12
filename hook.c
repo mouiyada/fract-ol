@@ -36,10 +36,8 @@ int	mouse_hook(int button, int x, int y, void *param)
 	t_fractol	*f;
 	double		mouse_re;
 	double		mouse_im;
-	double		prev_zoom;
 
 	f = (t_fractol *)param;
-	prev_zoom = f->zoom;
 	mouse_re = (x - WIDTH / 2.0) * 4.0 / (WIDTH * f->zoom) + f->offset_x;
 	mouse_im = -(y - HEIGHT / 2.0) * 4.0 / (HEIGHT * f->zoom) - f->offset_y;
 	if (button == 4)
